@@ -426,6 +426,23 @@ class db_int64_ctx {
       const db_int64_ctx&); /**< prohibit class assignment */
 };
 
+
+struct sourceloc {
+  const char* function_;
+  const char* file_;
+  int line_;
+  sourceloc(const char* function = __builtin_FUNCTION(),
+            const char* file = __builtin_FILE(),
+            int line = __builtin_LINE())
+      : function_{function}, file_{file}, line_{line}
+  {
+  }
+
+  const char* file() { return file_; }
+  const char* function() { return function_; }
+  int line() { return line_; }
+};
+
 /**
  * Call back context for getting a list of comma separated strings from the
  * database
@@ -998,9 +1015,11 @@ class BareosDb : public BareosDbQueryEnum {
       = 0;
 
  protected:
-  void AssertOwnership()
+  void AssertOwnership(sourceloc l = {})
   {
-    if (!is_private_) { RwlAssertWriterIsMe(&lock_); }
+    if (!is_private_) {
+      RwlAssertWriterIsMe(&lock_, l.function(), l.file(), l.line());
+    }
   }
 };
 
