@@ -425,6 +425,8 @@ bool WriteNewVolumeLabelToDev(DeviceControlRecord* dcr,
     WriteAnsiIbmLabels(dcr, ANSI_EOF_LABEL, dev->VolHdr.VolumeName);
   }
 
+  dev->d_flush(dcr);
+
   if (debug_level >= 20) { DumpVolumeLabel(dev); }
   Dmsg0(100, "Call reserve_volume\n");
   if (reserve_volume(dcr, VolName) == NULL) {
